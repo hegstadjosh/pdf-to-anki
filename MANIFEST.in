@@ -1,0 +1,9 @@
+include README.md
+include LICENSE
+include requirements.txt
+include .env.example
+recursive-include pdftoanki *
+global-exclude *.pyc
+global-exclude __pycache__
+global-exclude *.pyo
+global-exclude .git* 
