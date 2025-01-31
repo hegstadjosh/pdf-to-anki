@@ -137,6 +137,32 @@ class PDFToAnkiApp:
         )
         self.model_menu.pack(side=tk.LEFT, padx=5)
         
+        # Add Prompt Type selection
+        self.prompt_type_frame = ctk.CTkFrame(self.right_column)
+        self.prompt_type_frame.pack(fill=tk.X, padx=5, pady=5)
+        
+        self.prompt_type_label = ctk.CTkLabel(self.prompt_type_frame, text="Flashcard Type:")
+        self.prompt_type_label.pack(side=tk.LEFT, padx=5)
+        
+        # Get available prompt types
+        prompt_types = self.llm_processor.get_available_prompt_types()
+        self.prompt_type_var = tk.StringVar(value="standard")
+        self.prompt_type_menu = ctk.CTkOptionMenu(
+            self.prompt_type_frame,
+            values=list(prompt_types.keys()),
+            variable=self.prompt_type_var,
+            command=self._on_prompt_type_change
+        )
+        self.prompt_type_menu.pack(side=tk.LEFT, padx=5)
+        
+        # Add tooltip/description label
+        self.prompt_description_label = ctk.CTkLabel(
+            self.prompt_type_frame,
+            text=prompt_types["standard"],
+            wraplength=300
+        )
+        self.prompt_description_label.pack(side=tk.LEFT, padx=5)
+        
         # Prompt customization
         self.prompt_label = ctk.CTkLabel(self.right_column, text="Custom Prompt:")
         self.prompt_label.pack(padx=5, pady=2, anchor=tk.W)
@@ -238,12 +264,25 @@ class PDFToAnkiApp:
         if directory:
             self.output_path = directory
             
+    def _on_prompt_type_change(self, choice):
+        """Handle prompt type selection change."""
+        # Update prompt text with selected template
+        template = self.llm_processor.get_prompt_template(choice)
+        self.prompt_text.delete("1.0", tk.END)
+        self.prompt_text.insert("1.0", template)
+        
+        # Update description label
+        descriptions = self.llm_processor.get_available_prompt_types()
+        self.prompt_description_label.configure(text=descriptions[choice])
+        
     def _on_model_change(self, choice):
         """Handle model selection change."""
         self.llm_processor = LLMProcessor(model=choice)
-        # Update default prompt
+        # Keep current prompt type when changing model
+        current_prompt_type = self.prompt_type_var.get()
+        template = self.llm_processor.get_prompt_template(current_prompt_type)
         self.prompt_text.delete("1.0", tk.END)
-        self.prompt_text.insert("1.0", self.llm_processor.default_prompt)
+        self.prompt_text.insert("1.0", template)
         
     def _update_status(self, message: str, progress: float = None):
         """Update status message and progress bar."""

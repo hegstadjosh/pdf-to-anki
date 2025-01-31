@@ -49,7 +49,7 @@ class AnkiDeckGenerator:
         self.cloze_model = genanki.Model(
             model_id=self.model_id + 1,
             name='PDFToAnki Cloze',
-            model_type=1,  # 1 is for Cloze type
+            model_type=genanki.Model.CLOZE,
             fields=[
                 {'name': 'Text'},
                 {'name': 'Back Extra'},
@@ -59,6 +59,7 @@ class AnkiDeckGenerator:
                 'name': 'Cloze',
                 'qfmt': '{{cloze:Text}}<br><br><div class="source"><em>Source: {{Source}}</em></div>',
                 'afmt': '''{{cloze:Text}}<br>
+                        <hr id="answer">
                         {{Back Extra}}<br><br>
                         <div class="source"><em>Source: {{Source}}</em></div>'''
             }],
@@ -145,7 +146,7 @@ class AnkiDeckGenerator:
             
             for text, back_extra in cloze_items:
                 # Verify cloze deletion syntax
-                if "{{c1::" not in text:
+                if '{{c' not in text or '::' not in text or '}}' not in text:
                     logger.warning(f"Skipping invalid cloze item: {text[:50]}...")
                     continue
                     
@@ -155,6 +156,10 @@ class AnkiDeckGenerator:
                 )
                 deck.add_note(note)
             
+            if not deck.notes:
+                logger.warning("No valid cloze cards were created")
+                return None
+                
             output_file = f"{deck_name}_cloze.apkg"
             package = genanki.Package(deck)
             package.write_to_file(output_file)

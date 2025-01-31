@@ -8,28 +8,16 @@ A powerful tool to convert PDF documents into Anki flashcards using AI-powered t
 - **AI-Powered Processing**: Uses advanced language models (GPT-4, Claude, Perplexity) to generate high-quality flashcards
 - **Multiple Card Types**: 
   - Basic question and answer cards
-  - Cloze deletion cards
+  - ~~Cloze deletion cards~~ (Currently not working)
 - **Customizable Prompts**: Modify how the AI processes your content
 - **Modern GUI**: Built with customtkinter for a clean, modern interface
 - **Multi-Model Support**: Choose between different LLM providers
 
+> **Recommendation**: For best results, use PDFPlumber for text extraction with Claude as the LLM, and focus on generating concept-based flashcards rather than cloze deletions.
+
 ## Installation
 
-### Install with pip
-
-1. Install from GitHub:
-```bash
-pip install git+https://github.com/yourusername/pdftoanki.git
-```
-
-Or clone and install in development mode:
-```bash
-git clone https://github.com/yourusername/pdftoanki.git
-cd pdftoanki
-pip install -e .
-```
-
-2. Install spaCy language model:
+1. Install spaCy language model:
 ```bash
 python -m spacy download en_core_web_sm
 ```
