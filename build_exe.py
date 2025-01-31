@@ -56,10 +56,15 @@ datas = collect_data_files('en_core_web_sm', include_py_files=True)
         main_script,
         '--name=PDFToAnki',
         '--onefile',
-        '--windowed',  # Use --noconsole on Windows
+        # '--windowed',  # Removed windowed mode to show console
         '--add-data', f'{env_example}{os.pathsep}.env.example',
         '--hidden-import=en_core_web_sm',
+        '--hidden-import=customtkinter',
+        '--hidden-import=tkinter',
+        '--hidden-import=PIL',
+        '--collect-all=customtkinter',
         '--additional-hooks-dir=.',
+        '--debug=all',  # Add debug information
         '--clean',
         '--noconfirm',
     ]

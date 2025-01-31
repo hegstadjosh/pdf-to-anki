@@ -15,16 +15,7 @@ A powerful tool to convert PDF documents into Anki flashcards using AI-powered t
 
 ## Installation
 
-### Option 1: Download Executable (Recommended for Most Users)
-
-1. Go to the [Releases](https://github.com/yourusername/pdftoanki/releases) page
-2. Download the latest version for your operating system:
-   - Windows: `PDFToAnki.exe`
-   - macOS: `PDFToAnki.app`
-   - Linux: `PDFToAnki`
-3. Create a `.env` file in the same directory as the executable with your API keys (see Environment Setup below)
-
-### Option 2: Install with pip (For Developers)
+### Install with pip
 
 1. Install from GitHub:
 ```bash
@@ -36,6 +27,11 @@ Or clone and install in development mode:
 git clone https://github.com/yourusername/pdftoanki.git
 cd pdftoanki
 pip install -e .
+```
+
+2. Install spaCy language model:
+```bash
+python -m spacy download en_core_web_sm
 ```
 
 ## Environment Setup
@@ -51,10 +47,6 @@ PERPLEXITY_API_KEY=your_perplexity_key
 
 ## Usage
 
-### Using the Executable
-Simply double-click the executable file. The application will launch with a modern GUI interface.
-
-### Using the pip Installation
 Run the application:
 ```bash
 pdftoanki

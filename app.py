@@ -7,10 +7,20 @@ from anki_generator import AnkiDeckGenerator
 from llm_processor import LLMProcessor
 from typing import Optional
 import logging
+import sys
+import traceback
 from pathlib import Path
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
+# Configure logging to write to both file and console
+log_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'pdftoanki.log')
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(log_file),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
 logger = logging.getLogger(__name__)
 
 class PDFToAnkiApp:
@@ -447,6 +457,21 @@ class PDFToAnkiApp:
         """Start the application."""
         self.window.mainloop()
 
+def main():
+    try:
+        logger.info("Starting PDFToAnki application")
+        app = PDFToAnkiApp()
+        logger.info("Application initialized successfully")
+        app.run()
+    except Exception as e:
+        error_msg = f"Error: {str(e)}\n\nTraceback:\n{''.join(traceback.format_tb(e.__traceback__))}"
+        logger.error(error_msg)
+        
+        # If we're running as executable, show error in message box
+        if getattr(sys, 'frozen', False):
+            messagebox.showerror("Error", f"An error occurred:\n\n{str(e)}\n\nCheck pdftoanki.log for details.")
+        else:
+            raise
+
 if __name__ == "__main__":
-    app = PDFToAnkiApp()
-    app.run() 
+    main() 
