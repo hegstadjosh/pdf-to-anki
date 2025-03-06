@@ -5,7 +5,7 @@ A powerful tool to convert PDF documents into Anki flashcards using AI-powered t
 ## Features
 
 - **PDF Text Extraction**: Support for both simple and complex PDF layouts
-- **AI-Powered Processing**: Uses advanced language models (GPT-4, Claude, Perplexity) to generate high-quality flashcards
+- **AI-Powered Processing**: Uses advanced language models (OpenAI, Claude, Perplexity) to generate high-quality flashcards
 - **Multiple Card Types**: 
   - Basic question and answer cards
   - ~~Cloze deletion cards~~ (Currently not working)
@@ -13,13 +13,27 @@ A powerful tool to convert PDF documents into Anki flashcards using AI-powered t
 - **Modern GUI**: Built with customtkinter for a clean, modern interface
 - **Multi-Model Support**: Choose between different LLM providers
 
-> **Recommendation**: For best results, use PDFPlumber for text extraction with Claude as the LLM, and focus on generating concept-based flashcards rather than cloze deletions.
+> **Recommendation**: For best results, use PDFPlumber for text extraction with Claude as the LLM, and focus on generating concept-based flashcards.
 
 ## Installation
 
-1. Install spaCy language model:
+1. Clone the repository
+2. Create a virtual environment:
 ```bash
-python -m spacy download en_core_web_sm
+python -m venv venv
+```
+3. Activate the virtual environment:
+   - Windows:
+   ```
+   .\venv\Scripts\activate
+   ```
+   - macOS/Linux:
+   ```
+   source venv/bin/activate
+   ```
+4. Install dependencies:
+```bash
+pip install -r requirements.txt
 ```
 
 ## Environment Setup
@@ -37,14 +51,14 @@ PERPLEXITY_API_KEY=your_perplexity_key
 
 Run the application:
 ```bash
-pdftoanki
+python app.py
 ```
 
 ### Using the GUI:
 1. Click "Browse" to select a PDF file
 2. Choose your preferred LLM model
 3. Customize the prompt if desired
-4. Select additional options (PDFPlumber, Cloze cards)
+4. Select additional options (PDFPlumber)
 5. Click "Process PDF" to generate your Anki deck
 
 The generated `.apkg` file can be imported directly into Anki.
