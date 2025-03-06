@@ -6,6 +6,7 @@ from anthropic import Anthropic
 import base64
 import httpx
 import os
+import logging
 
 # Load environment variables
 load_dotenv()
@@ -86,7 +87,7 @@ def get_perplexity_completion(messages, model="sonar-pro", stream=False):
     except Exception as e:
         return messages, False, str(e)
 
-def get_claude_completion(messages, model="claude-3-sonnet-20240229"):
+def get_claude_completion(messages, model="claude-3-7-sonnet-latest"):
     """
     Get completion from Claude models.
     
@@ -101,18 +102,26 @@ def get_claude_completion(messages, model="claude-3-sonnet-20240229"):
         messages = [{"role": "user", "content": messages}]
     
     try:
+        logger = logging.getLogger(__name__)
+        logger.info(f"Sending request to Claude API with model: {model}")
+        
         response = claude_client.messages.create(
             model=model,
-            max_tokens=1024,
+            max_tokens=4000,  # Increased max tokens for longer responses
             messages=[msg for msg in messages if msg["role"] != "system"]
         )
         
         ai_response = response.content[0].text
         messages.append({"role": "assistant", "content": ai_response})
         
+        logger.info(f"Successfully received response from Claude API, length: {len(ai_response)}")
         return messages, True, ai_response
         
     except Exception as e:
+        import traceback
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error in Claude API call: {str(e)}")
+        logger.error(traceback.format_exc())
         return messages, False, str(e)
 
 def get_llm_completion(query, model="gpt-4o", stream=False):
@@ -165,7 +174,7 @@ def process_image_claude(image_url, message_text="Describe this image."):
         image_data = base64.standard_b64encode(image_response.content).decode("utf-8")
 
         response = claude_client.messages.create(
-            model="claude-3-sonnet-20240229",
+            model="claude-3-7-sonnet-latest",
             max_tokens=1024,
             messages=[
                 {
@@ -254,7 +263,7 @@ def interactive_chat():
         "4": "sonar-pro",
         "5": "sonar",
         "6": "sonar-reasoning",
-        "7": "claude-3-sonnet-20240229",
+        "7": "claude-3-7-sonnet-latest",
         "8": "claude-3-opus-20240229",
         "9": "claude-3-haiku-20240307"
     }

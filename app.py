@@ -131,7 +131,7 @@ class PDFToAnkiApp:
         self.model_var = tk.StringVar(value="gpt-4o")
         self.model_menu = ctk.CTkOptionMenu(
             self.model_frame,
-            values=["gpt-4o", "claude-3-sonnet-20240229", "sonar-pro"],
+            values=["gpt-4o", "claude-3-7-sonnet-latest", "sonar-pro"],
             variable=self.model_var,
             command=self._on_model_change
         )

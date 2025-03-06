@@ -8,6 +8,5 @@ rich>=13.0.0
 customtkinter>=5.2.0
 pillow>=10.0.0
 pdfplumber>=0.10.0
-spacy>=3.7.0
 pytest>=8.0.0
 pyinstaller>=6.3.0 

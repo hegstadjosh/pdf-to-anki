@@ -1,7 +1,6 @@
 import PyPDF2
 import pdfplumber
 import re
-import spacy
 from typing import List, Tuple, Optional
 import logging
 import os
@@ -11,32 +10,11 @@ import sys
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def get_model_path():
-    """Get the spaCy model path for both development and PyInstaller environments."""
-    if getattr(sys, 'frozen', False):
-        # Running in PyInstaller bundle
-        base_path = sys._MEIPASS
-    else:
-        # Running in normal Python environment
-        base_path = os.path.dirname(os.path.abspath(__file__))
-    
-    return os.path.join(base_path, 'en_core_web_sm')
-
 class PDFProcessor:
     def __init__(self):
-        """Initialize the PDF processor with spaCy model for NLP tasks."""
-        try:
-            self.nlp = spacy.load("en_core_web_sm")
-        except OSError:
-            try:
-                # Try loading from bundled path
-                model_path = get_model_path()
-                self.nlp = spacy.load(model_path)
-            except OSError:
-                logger.info("Downloading spaCy model...")
-                import subprocess
-                subprocess.run([sys.executable, "-m", "spacy", "download", "en_core_web_sm"], check=True)
-                self.nlp = spacy.load("en_core_web_sm")
+        """Initialize the PDF processor."""
+        # No spaCy model loading
+        pass
 
     def get_page_count(self, pdf_path: str) -> int:
         """Get the total number of pages in the PDF."""
@@ -149,16 +127,14 @@ class PDFProcessor:
         return qa_pairs
 
     def is_question(self, text: str) -> bool:
-        """Determine if a sentence is likely a question using NLP."""
-        doc = self.nlp(text)
-        
+        """Determine if a sentence is likely a question using regex patterns."""
         # Check for question marks
         if "?" in text:
             return True
             
         # Check for question words
         question_words = {"what", "why", "how", "when", "where", "which", "who", "whose", "whom"}
-        first_word = doc[0].text.lower()
+        first_word = text.split()[0].lower() if text.split() else ""
         if first_word in question_words:
             return True
             
@@ -170,12 +146,14 @@ class PDFProcessor:
         return False
 
     def parse_unstructured_text(self, text: str) -> List[Tuple[str, str]]:
-        """Parse text without explicit Q&A markers using NLP."""
+        """Parse text without explicit Q&A markers using regex-based sentence splitting."""
         qa_pairs = []
-        doc = self.nlp(text)
         
-        # Split into sentences
-        sentences = [sent.text.strip() for sent in doc.sents]
+        # Split into sentences using regex
+        # This pattern looks for sentence boundaries (period, question mark, exclamation point)
+        # followed by a space and uppercase letter or end of string
+        sentence_pattern = r'(?<=[.!?])\s+(?=[A-Z])'
+        sentences = [s.strip() for s in re.split(sentence_pattern, text) if s.strip()]
         
         for i, sent in enumerate(sentences[:-1]):
             if self.is_question(sent):

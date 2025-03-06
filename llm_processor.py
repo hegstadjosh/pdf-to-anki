@@ -159,12 +159,18 @@ class LLMProcessor:
             # Format prompt with text
             formatted_prompt = prompt.format(text=text)
             
+            logger.info(f"Using model: {self.model}")
+            
             # Get completion from LLM
             success, response = get_llm_completion(formatted_prompt, self.model)
             
             if not success:
                 logger.error(f"Error getting LLM completion: {response}")
                 return []
+            
+            # Log raw response for debugging
+            logger.info(f"Raw LLM response length: {len(response)}")
+            logger.info(f"Raw LLM response first 500 chars: {response[:500]}")
             
             # Parse response into Q&A pairs
             qa_pairs = []
@@ -183,6 +189,7 @@ class LLMProcessor:
                             current_question, 
                             '\n'.join(current_answer).strip()
                         ))
+                        logger.info(f"Added Q&A pair: Q: {current_question[:50]}...")
                     # Start new question
                     current_question = line[2:].strip()
                     current_answer = []
@@ -197,11 +204,16 @@ class LLMProcessor:
                     current_question, 
                     '\n'.join(current_answer).strip()
                 ))
+                logger.info(f"Added final Q&A pair: Q: {current_question[:50]}...")
+            
+            logger.info(f"Total Q&A pairs extracted: {len(qa_pairs)}")
             
             return qa_pairs
             
         except Exception as e:
             logger.error(f"Error processing text with LLM: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
             return []
 
     def create_cloze_deletions(self, text: str, custom_prompt: Optional[str] = None) -> List[Tuple[str, str]]:
